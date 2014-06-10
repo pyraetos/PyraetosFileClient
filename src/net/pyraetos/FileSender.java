@@ -26,10 +26,12 @@ public class FileSender extends Socket{
 		this.localDir = localDir;
 		this.remoteDir = remoteDir;
 		this.password = password;
+		PFCFrame.setSending(true);
 		try{
 			remote = new Socket("pyraetos.net", 524);
 		} catch(Exception e){
 			PFCFrame.addLine("An exception occured in connection!");
+			PFCFrame.setSending(false);
 			return;
 		}
 		PFCFrame.addLine("Sending file to server...");
@@ -48,11 +50,11 @@ public class FileSender extends Socket{
 			try{
 				InputStream in = remote.getInputStream();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-				PFCFrame.addLine(reader.readLine());
+				PFCFrame.addLine("The server says: " + reader.readLine());
 				remote.close();
 			}catch(Exception e){
 				PFCFrame.addLine("An exception occured in input!");
-				e.printStackTrace();
+				PFCFrame.setSending(false);
 				try{
 					remote.close();
 				}catch(IOException e1){}
@@ -79,6 +81,8 @@ public class FileSender extends Socket{
 				writer.flush();
 				List<Integer> buffer = new ArrayList<Integer>();
 				FileInputStream in = new FileInputStream(file);
+				PFCFrame.setProgress(-1);
+				PFCFrame.setProgressString("Buffering...");
 				int b = in.read();
 				while(b != -1){
 					buffer.add(b);
@@ -87,12 +91,19 @@ public class FileSender extends Socket{
 				in.close();
 				int size = buffer.size();
 				out.writeInt(size);
-				for(int i : buffer)
+				double written = 0;
+				PFCFrame.setProgressString("Sending...");
+				for(int i : buffer){
 					out.write(i);
+					PFCFrame.setProgress((int)(((++written) / size) * 100d));
+				}
+				PFCFrame.setProgress(0);
+				PFCFrame.setProgressString("");
+				PFCFrame.setSending(false);
 				out.flush();
 			}catch(Exception e){
 				PFCFrame.addLine("An exception occured in output!");
-				e.printStackTrace();
+				PFCFrame.setSending(false);
 				try{
 					remote.close();
 				}catch(IOException e1){}
