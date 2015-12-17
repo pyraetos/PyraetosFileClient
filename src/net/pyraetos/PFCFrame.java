@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,7 +22,7 @@ public class PFCFrame extends JFrame{
 	private static JPanel statusPanel;
 	private static JTextArea textArea;
 	private static JTextField localTextField;
-	private static JTextField remoteTextField;
+	private static JComboBox<String> remoteMenu;
 	private static JTextField passwordTextField;
 	private static JProgressBar progressBar;
 	private static JButton browseButton;
@@ -37,7 +38,7 @@ public class PFCFrame extends JFrame{
 		initFilePanel();
 		initLocalTextField();
 		initBrowseButton();
-		initRemoteTextField();
+		initRemoteMenu();
 		initPasswordTextField();
 		initSendButton();
 		pack();
@@ -88,10 +89,16 @@ public class PFCFrame extends JFrame{
 		filePanel.add(Sys.space());
 	}
 	
-	private void initRemoteTextField(){
-		remoteTextField = new JTextField("C:\\Program Files (x86)\\Apache Software Foundation\\Apache2.2\\htdocs\\FILENAME", 42);
-		remoteTextField.setBackground(Color.WHITE);
-		filePanel.add(remoteTextField);
+	private void initRemoteMenu(){
+		remoteMenu = new JComboBox<String>();
+		remoteMenu.addItem("htdocs\\");
+		remoteMenu.addItem("htdocs\\images\\");
+		remoteMenu.addItem("htdocs\\projects\\");
+		remoteMenu.addItem("htdocs\\sounds\\");
+		remoteMenu.addItem("htdocs\\college\\");
+		remoteMenu.addItem("htdocs\\college\\docs\\");
+		remoteMenu.setBackground(Color.WHITE);
+		filePanel.add(remoteMenu);
 		filePanel.add(Sys.space());
 	}
 	
@@ -118,9 +125,17 @@ public class PFCFrame extends JFrame{
 			if(sending)
 				addLine("Unable to send two files simultaneously!");
 			else
-				new FileSender(localTextField.getText(), remoteTextField.getText(), passwordTextField.getText());
+				new FileSender(localTextField.getText(), "C:\\Program Files (x86)\\Apache Software Foundation\\Apache2.2\\" + remoteMenu.getSelectedItem() + getFilename(), passwordTextField.getText());
 		});
 		filePanel.add(sendButton);
+	}
+	
+	private String getFilename(){
+		String a = localTextField.getText();
+		a = a.replace('\\', '>');
+		String[] b = a.split(">");
+		addLine(b[b.length-1]);
+		return b[b.length-1];
 	}
 	
 	public static synchronized void addLine(String string){
