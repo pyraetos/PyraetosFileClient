@@ -1,6 +1,8 @@
 package net.pyraetos;
 
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -28,6 +30,7 @@ public class PFCFrame extends JFrame{
 	private static JButton browseButton;
 	private static JButton sendButton;
 	private static boolean sending;
+	private static boolean pwNeedsClear;
 	public static final String NULL = "Choose a file!";
 	
 	public PFCFrame(){
@@ -104,7 +107,17 @@ public class PFCFrame extends JFrame{
 	
 	private void initPasswordTextField(){
 		passwordTextField = new JTextField("Enter password!", 42);
+		pwNeedsClear = true;
 		passwordTextField.setBackground(Color.WHITE);
+		passwordTextField.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mousePressed(MouseEvent e){
+				if(pwNeedsClear){
+					passwordTextField.setText("");
+					pwNeedsClear = false;
+				}
+			}
+		});
 		filePanel.add(passwordTextField);
 		filePanel.add(Sys.space());
 	}
