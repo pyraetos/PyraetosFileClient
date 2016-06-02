@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 
 import net.pyraetos.util.Sys;
 
+@SuppressWarnings("serial")
 public class PFCFrame extends JFrame{
 
 	private static JPanel panel;
